@@ -1,16 +1,19 @@
 (function() {
   goog.provide('ga_draw_directive');
 
+  goog.require('ga_export_kml_service');
   goog.require('ga_map_service');
 
   var module = angular.module('ga_draw_directive', [
+    'ga_export_kml_service',
     'ga_map_service',
     'pascalprecht.translate'
   ]);
 
   module.directive('gaDraw',
-    function($timeout, $translate, gaDefinePropertiesForLayer,
-        gaLayerFilters) {
+    function($timeout, $translate, $window, gaDefinePropertiesForLayer,
+        gaLayerFilters, gaExportKml) {
+
       return {
         restrict: 'A',
         templateUrl: function(element, attrs) {
@@ -258,6 +261,10 @@
                 activateSelectInteraction();
               }
             }
+          };
+
+          scope.exportKml = function() {
+            gaExportKml.create(source, map.getView().getProjection());
           };
 
           scope.aToolIsActive = function() {
