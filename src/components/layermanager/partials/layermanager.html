@@ -7,7 +7,13 @@
       <span></span>
       {{layer.label}}
     </label>
-    <span ng-if="layer.timeEnabled" class="ga-layer-time-label">{{layer.time | gaTimeLabel:layer}}</span>
+    <div ng-if="layer.timeEnabled" class="ga-layer-time">
+      <label ng-hide="options.showTimestamps" class="ga-layer-time-label">{{layer.time | gaTimeLabel:layer}}</label>
+      <select ng-show="options.showTimestamps" class="ga-layer-timestamps"
+              ng-model="layer.time" 
+              ng-options="(i | gaTimeLabel:layer) for i in layer.timestamps"></select>
+
+    </div>
     <span class="ga-layer-tools">
       <label class="ga-layer-transparency">
         <span translate>transparency</span>&nbsp;
@@ -17,6 +23,7 @@
       </label>
       <a href="#" class="ga-layer-info" ng-show="isBodLayer(layer)" ng-click="displayLayerMetadata($event, layer)"><i class="icon-info-sign"></i></a>
       <div class="ga-layer-ordering">
+        <a href="#" class="icon-file" ng-if="layer.timeEnabled" ng-click="duplicateLayer($event, layer)"></a>
         <a href="#" class="icon-arrow-up" ng-if="!$first" ng-click="moveLayer($event, layer, 1)"></a>
         <i class="icon-arrow-up" ng-if="$first"></i>
         <a href="#" class="icon-arrow-down" ng-if="!$last" ng-click="moveLayer($event, layer, -1)"></a>

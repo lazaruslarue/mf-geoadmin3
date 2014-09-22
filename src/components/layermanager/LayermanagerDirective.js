@@ -58,7 +58,8 @@
           replace: true,
           templateUrl: 'components/layermanager/partials/layermanager.html',
           scope: {
-            map: '=gaLayermanagerMap'
+            map: '=gaLayermanagerMap',
+            options: '=gaLayermanagerOptions'
           },
           link: function(scope, element, attrs) {
             var map = scope.map;
@@ -75,6 +76,14 @@
 
             scope.removeLayerFromMap = function(layer) {
               map.removeLayer(layer);
+            };
+
+            scope.duplicateLayer = function(e, layer) {
+              var dupLayer = gaLayers.getOlLayerById(layer.bodId);
+              dupLayer.time = layer.time;
+              var index = scope.layers.indexOf(layer);
+              map.getLayers().insertAt(index, dupLayer);
+              e.preventDefault();
             };
 
             scope.moveLayer = function(e, layer, delta) {
