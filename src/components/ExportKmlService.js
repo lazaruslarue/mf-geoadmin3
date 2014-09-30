@@ -44,15 +44,15 @@
               stringified = new $window.XMLSerializer().serializeToString(node);
             }
             var base64 = $window.btoa(stringified);
-//            var locationString = 'data:application/vnd.google-earth.kml+xml;' +
-//                                 'filename=map.geo.admin.ch.kml;';
+//          var locationString = 'data:application/vnd.google-earth.kml+xml;' +
+//                               'filename=map.geo.admin.ch.kml;';
             var locationString = 'data:application/vnd.google-earth.kml+xml;';
             if (gaBrowserSniffer.msie == 9) {
-              locationString += ''; 
+              locationString += '';
             } else if (gaBrowserSniffer.msie > 9) {
               locationString += '';
             }
-            
+
             $window.location = locationString + 'base64,' + base64;
           }
         };
