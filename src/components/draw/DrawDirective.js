@@ -11,9 +11,8 @@
   ]);
 
   module.directive('gaDraw',
-    function($timeout, $translate, $window, gaDefinePropertiesForLayer,
-        gaLayerFilters, gaExportKml) {
-
+    function($timeout, $translate, $window, $rootScope,
+        gaDefinePropertiesForLayer, gaLayerFilters, gaExportKml) {
       return {
         restrict: 'A',
         templateUrl: function(element, attrs) {
@@ -42,6 +41,7 @@
           // Activate the component: active a tool if one was active when draw
           // has been deactivated.
           var activate = function() {
+            $rootScope.$broadcast('drawingLayer', layer);
             if (lastActiveTool) {
               activateTool(lastActiveTool);
             }
@@ -264,7 +264,11 @@
           };
 
           scope.exportKml = function() {
-            gaExportKml.create(source, map.getView().getProjection());
+            gaExportKml.createAndDownload(layer, map.getView().getProjection());
+          };
+
+          scope.canExport = function() {
+            return source.getFeatures().length > 0;
           };
 
           scope.aToolIsActive = function() {

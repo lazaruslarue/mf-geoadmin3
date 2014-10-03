@@ -14,13 +14,20 @@
   module.provider('gaExportKml', function() {
     this.$get = function($window, gaBrowserSniffer) {
       var ExportKml = function() {
-        this.create = function(vectorSource, projection) {
-          var exportFeatures = [];
-          vectorSource.forEachFeature(function(f) {
+        this.create = function(layer, projection) {
+          var kmlstring,
+              exportFeatures = [];
+          layer.getSource().forEachFeature(function(f) {
               var clone = f.clone();
               clone.setId(f.getId());
               clone.getGeometry().transform(projection, 'EPSG:4326');
-              var styles = clone.getStyleFunction()();
+              var styles;
+              if (clone.getStyleFunction &&
+                  clone.getStyleFunction()) {
+                styles = clone.getStyleFunction()();
+              } else {
+                styles = layer.getStyleFunction()(clone);
+              }
               var newStyle = {
                 fill: styles[0].getFill(),
                 stroke: styles[0].getStroke(),
@@ -39,14 +46,23 @@
 
           if (exportFeatures.length > 0) {
             var node = new ol.format.KML().writeFeatures(exportFeatures);
-            var stringified = node.outerHtml;
-            if (!stringified) {
-              stringified = new $window.XMLSerializer().serializeToString(node);
+            kmlstring = node.outerHtml;
+            if (!kmlstring) {
+              kmlstring = new $window.XMLSerializer().serializeToString(node);
             }
-            var base64 = $window.btoa(stringified);
+          }
+          return kmlstring;
+        };
+
+        this.createAndDownload = function(layer, projection) {
+          var base64, locationString,
+              kmlstring = this.create(layer, projection);
+          if (kmlstring) {
+            base64 = $window.btoa(kmlstring);
+
 //          var locationString = 'data:application/vnd.google-earth.kml+xml;' +
 //                               'filename=map.geo.admin.ch.kml;';
-            var locationString = 'data:application/vnd.google-earth.kml+xml;';
+            locationString = 'data:application/vnd.google-earth.kml+xml;';
             if (gaBrowserSniffer.msie == 9) {
               locationString += '';
             } else if (gaBrowserSniffer.msie > 9) {
@@ -54,6 +70,7 @@
             }
 
             $window.location = locationString + 'base64,' + base64;
+
           }
         };
       };
