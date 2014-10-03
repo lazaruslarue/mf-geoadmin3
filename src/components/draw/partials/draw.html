@@ -8,9 +8,6 @@
       <div translate>{{tool.title}}</div>
     </button>
   </div>
-  <div class="ga-draw-instructions" ng-if="aToolIsActive()">
-    {{options.instructions | translate}}
-  </div>
 
   <div class="ga-draw-modify" ng-if="aToolIsActive()">
     <div ng-if="options.isTextActive || useTextStyle">
