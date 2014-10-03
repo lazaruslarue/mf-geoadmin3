@@ -8,11 +8,16 @@
       {{layer.label}}
     </label>
     <div ng-if="layer.timeEnabled" class="ga-layer-time">
-      <label ng-hide="options.showTimestamps" class="ga-layer-time-label">{{layer.time | gaTimeLabel:layer}}</label>
-      <select ng-show="options.showTimestamps" class="ga-layer-timestamps"
-              ng-model="layer.time" 
-              ng-options="(i | gaTimeLabel:layer) for i in layer.timestamps"></select>
-
+      <label class="badge dropdown-toggle" data-toggle="dropdown">{{layer.time | gaTimeLabel:layer}}
+        <select ng-model="layer.time" 
+                ng-options="(i | gaTimeLabel:layer) for i in
+                layer.timestamps"></select>
+      </label>
+      <ul class="dropdown-menu" role="menu">
+         <li ng-repeat="i in layer.timestamps">
+           <a href="#">{{i | gaTimeLabel:layer}}</a>
+         </li>
+      </ul>
     </div>
     <span class="ga-layer-tools">
       <label class="ga-layer-transparency">

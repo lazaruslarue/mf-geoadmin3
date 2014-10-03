@@ -24,13 +24,13 @@
   /**
    * Filter to display a correct time label in all possible situations
    */
-  module.filter('gaTimeLabel', function() {
+  module.filter('gaTimeLabel', function($translate) {
     var maxYear = (new Date()).getFullYear();
     return function(input, layer) {
       // input values possible: 1978, '1978', '19783112', '99993112', undefined
       // if layer is WMTS:
       //   if timeselector not active:
-      //      '99993112' ==> ''
+      //      '99993112' ==> $translate('all');
       //   else :
       //      undefined ==> '-'
       //      '19783112' ==> '1978'
@@ -46,7 +46,7 @@
       if (angular.isString(input)) {
         yearNum = parseInt(input.substring(0, 4));
       }
-      return (yearNum <= maxYear) ? yearNum : '';
+      return (yearNum <= maxYear) ? yearNum : $translate('all');
     }
   });
 
@@ -162,6 +162,31 @@
                       'label');
                 }
               });
+            });
+             
+            var savedTime = {}; 
+            scope.$on('gaTimeSelectorToggle', function(event, active) {
+              if (active) {
+                // Save time values 
+                scope.map.getLayers().forEach(function(olLayer, opt) {
+                  if (olLayer.timeEnabled) {
+                    savedTime[olLayer.bodId] = olLayer.time ;
+                  }
+                });
+              }
+            });
+
+            scope.$on('gaTimeSelectorChange', function(event, year) {
+              if (!angular.isDefined(year)) {
+                // Apply saved time values
+                scope.map.getLayers().forEach(function(olLayer, opt) {
+                  if (olLayer.timeEnabled) {
+                    var time = savedTime[olLayer.bodId];
+                    olLayer.time = time;
+                  }
+                });
+                savedTime = {};
+              }
             });
           }
         };
